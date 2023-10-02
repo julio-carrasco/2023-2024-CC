@@ -6,13 +6,20 @@
 
 #pragma once
 
+#include <iostream>
 #include <set>
+#include <sstream>
 
+/**
+ * @brief class for an alphabet, a set of unique characters
+ *
+ */
 class Alphabet {
  private:
   std::set<std::string> alphabet_;
 
  public:
+  Alphabet();
   Alphabet(const std::string);
   void insert(const std::string);
   bool checker(const std::string);

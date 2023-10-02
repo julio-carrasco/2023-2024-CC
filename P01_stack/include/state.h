@@ -7,18 +7,24 @@
 #pragma once
 
 #include <iostream>
+#include <sstream>
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
 
 class State {
  private:
   std::string name_;
-  std::map<std::string, std::string> transitions_;
+  // transitions are stored in a map in the following way: the key is a pair of
+  // the stack and input values, the value associated is a vector of strings
+  // containing 2 elements, the next state and the new stack value
+  std::map<std::pair<std::string, std::string>, std::vector<std::string>>
+      transitions_;
 
  public:
+  State();
   State(std::string);
   void add_transition(std::string);
-  std::string next_state(std::string);
+  std::vector<std::string> available_transitions(std::string);
   std::string get_name();
 };

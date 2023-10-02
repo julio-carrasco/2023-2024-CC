@@ -4,17 +4,17 @@
 // Complejidad de computacion
 // alu0101110639@ull.edu.es
 
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <stack>
 #include <string>
-#include <sstream>
 #include <vector>
 
+#include "../include/ap.h"
+
 int main() {
-  std::string input = "a A q1 A A";
-  std::string name = input.substr(0, 3);
-  std::string destination = input.substr(3);
-  std::cout << "name: " << name << std::endl;
-  std::cout << "destiantion: " << destination << std::endl;
+  std::string filename = "./examples/APv.txt";
+  Stack_machine ap(filename);
   return 0;
 }

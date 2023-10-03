@@ -32,9 +32,12 @@ void State::add_transition(std::string input) {
   while (iss >> element) {
     elements.push_back(element);
   }
-  for (counter = 0; counter <= elements.size(); counter++) {
-    // We skip the first element as it refers to the state of the transition
+  for (counter = 0; counter < elements.size(); counter++) {
     switch (counter) {
+      case 0:
+        // We do nothing here as the starting state of the transition is of no
+        // use here
+        break;
       // input string
       case 1:
         input_string = elements[counter];
@@ -51,8 +54,19 @@ void State::add_transition(std::string input) {
   }
   std::pair<std::string, std::string> aux =
       std::make_pair(input_string, input_stack);
-  transitions_.insert({aux, temp});
-  std::cout << "the transition " << input << " should've been added to " << name_ << std::endl;
+  transitions_.emplace(aux, temp);
+  for (const auto& entry : transitions_) {
+    const auto& key = entry.first;
+    const auto& value = entry.second;
+
+    std::cout << "Key: (" << key.first << ", " << key.second << ")"
+              << std::endl;
+    std::cout << "Value: ";
+    for (const std::string& nextState : value) {
+      std::cout << nextState << " ";
+    }
+    std::cout << std::endl;
+  }
 }
 
 /**
@@ -61,3 +75,13 @@ void State::add_transition(std::string input) {
  * @return std::string string with the name of the state
  */
 std::string State::get_name() { return name_; }
+
+/**
+ * @brief given the current state of the input and the stack returns the
+ * available transitions
+ *
+ * @return std::vector<std::string>
+ */
+std::vector<std::string> State::available_transitions(std::string) {
+  
+}

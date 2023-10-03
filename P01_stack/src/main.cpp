@@ -13,8 +13,8 @@
 
 #include "../include/ap.h"
 
-int main() {
-  std::string filename = "./examples/APv.txt";
+int main(int argc, char *argv[]) {
+  std::string filename = argv[1];
   Stack_machine ap(filename);
   return 0;
 }

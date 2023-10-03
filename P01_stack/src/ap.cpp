@@ -122,52 +122,88 @@ void Stack_machine::transition_manager(std::string input) {
   while (iss >> element) {
     elements.push_back(element);
   }
-  for (counter = 0; counter <= elements.size(); counter++) {
+  for (counter = 0; counter < elements.size(); counter++) {
     switch (counter) {
       // initial state of the transition
       case 0:
         if (!state_checker(elements[counter])) {
-          std::cerr << "Undefined initial state" << std::endl;
+          std::cerr << "Undefined initial state" << elements[counter]
+                    << std::endl;
           exit(1);
         }
         break;
       // input
       case 1:
         if (!sigma_.checker(elements[counter])) {
-          std::cerr << "Undefined input symbol" << std::endl;
+          std::cerr << "Undefined input symbol" << elements[counter]
+                    << std::endl;
           exit(1);
         }
         break;
       // stack input
       case 2:
         if (!tau_.checker(elements[counter])) {
-          std::cerr << "Undefined stack symbol" << std::endl;
+          std::cerr << "Undefined stack symbol" << elements[counter]
+                    << std::endl;
           exit(1);
         }
         break;
       // next state
       case 3:
         if (!state_checker(elements[counter])) {
-          std::cerr << "Undefined next state" << std::endl;
+          std::cerr << "Undefined next state" << elements[counter] << std::endl;
           exit(1);
         }
         break;
       // stack operation
       default:
         if (!tau_.checker(elements[counter])) {
-          std::cerr << "Undefined stack symbol" << std::endl;
+          std::cerr << "Undefined stack symbol: " << elements[counter]
+                    << std::endl;
           exit(1);
         }
         break;
     }
   }
+  std::cout << "getting state " << elements[0] << std::endl;
   get_state(elements[0]).add_transition(input);
 }
 
+/**
+ * @brief Returns a State element by the given name
+ *
+ * @param name string with the name of the State
+ * @return State& element by reference
+ */
 State& Stack_machine::get_state(std::string name) {
-  for (auto el : states_) {
-    if (name == el.get_name()) {
-      return el;
+  int size = states_.size();
+  for (int i = 0; i < size; i++) {
+    if (states_[i].get_name() == name) {
+      return states_[i];
     }
   }
+  std::cerr << "There is no state with the provided name" << std::endl;
+  exit(1);
+}
+
+/**
+ * @brief Returns the first symbol of the input string
+ * 
+ * @return std::string that contains the first symbol of the string
+ */
+std::string Stack_machine::get_input_symbol() {
+  std::string aux = "";
+  if (!input_.empty()) {
+    aux = input_.substr(0, 1);
+  }
+  return aux;
+}
+
+/**
+ * @brief Returns the top symbol of the stack
+ * 
+ * @return std::string that contains the top symbol of the stack
+ */
+std::string Stack_machine::get_stack_top() {
+  return stack_memory_.top();
 }

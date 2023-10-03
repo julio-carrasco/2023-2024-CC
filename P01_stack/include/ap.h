@@ -24,10 +24,13 @@ class Stack_machine {
   Alphabet tau_;
   std::vector<State> states_;
   State current_state_;
+
   void set_state(std::string);
   bool state_checker(std::string);
   State& get_state(std::string);
   void transition_manager(std::string);
+  std::string get_input_symbol();
+  std::string get_stack_top();
 
  public:
   Stack_machine(std::string);

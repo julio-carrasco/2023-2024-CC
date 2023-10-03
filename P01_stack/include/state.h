@@ -16,7 +16,7 @@ class State {
  private:
   std::string name_;
   // transitions are stored in a map in the following way: the key is a pair of
-  // the stack and input values, the value associated is a vector of strings
+  // the input and stack values, the value associated is a vector of strings
   // containing 2 elements, the next state and the new stack value
   std::map<std::pair<std::string, std::string>, std::vector<std::string>>
       transitions_;

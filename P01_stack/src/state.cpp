@@ -55,18 +55,6 @@ void State::add_transition(std::string input) {
   std::pair<std::string, std::string> aux =
       std::make_pair(input_string, input_stack);
   transitions_.emplace(aux, temp);
-  for (const auto& entry : transitions_) {
-    const auto& key = entry.first;
-    const auto& value = entry.second;
-
-    std::cout << "Key: (" << key.first << ", " << key.second << ")"
-              << std::endl;
-    std::cout << "Value: ";
-    for (const std::string& nextState : value) {
-      std::cout << nextState << " ";
-    }
-    std::cout << std::endl;
-  }
 }
 
 /**
@@ -82,6 +70,45 @@ std::string State::get_name() { return name_; }
  *
  * @return std::vector<std::string>
  */
-std::vector<std::string> State::available_transitions(std::string) {
-  
+std::vector<std::vector<std::string>> State::available_transitions(
+    std::string input, std::string stack_top) {
+  for (const auto& entry : transitions_) {
+    const auto& key = entry.first;
+    const auto& value = entry.second;
+
+    std::cout << "Key: (" << key.first << ", " << key.second << ")"
+              << std::endl;
+    std::cout << "Value: ";
+    for (const std::string& nextState : value) {
+      std::cout << nextState << " ";
+    }
+    std::cout << std::endl;
+  }
+
+  std::vector<std::vector<std::string>> possible_transitions;
+  std::pair<std::string, std::string> current_input =
+      std::make_pair(input, stack_top);
+  for (auto it = transitions_.equal_range(current_input); it.first != it.second;
+       ++it.first) {
+    possible_transitions.emplace_back(it.first->second);
+  }
+  // Case to add empty transitions
+  if (current_input.first != ".") {
+    std::pair<std::string, std::string> empty_transition =
+        std::make_pair(".", stack_top);
+    for (auto it = transitions_.equal_range(empty_transition);
+         it.first != it.second; ++it.first) {
+      possible_transitions.emplace_back(it.first->second);
+    }
+  }
+
+  for (auto transitions : possible_transitions) {
+    std::cout << "Possible Transitions: ";
+    for (auto it : transitions) {
+      std::cout << it << " ";
+    }
+    std::cout << std::endl;
+  }
+
+  return possible_transitions;
 }

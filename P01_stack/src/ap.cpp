@@ -67,16 +67,13 @@ Stack_machine::Stack_machine(std::string filename) {
         counter++;
       }
     }
+    for (auto it : states_) {
+      if (it.get_name() == initial_state) {
+        current_state_ = it;
+      }
+    }
   }
   file.close();
-}
-
-void Stack_machine::transition(std::string input, std::string consumed_input,
-                               State state, std::stack<std::string> stack) {
-  input_ = input;
-  consumed_input_ = consumed_input;
-  current_state_ = state;
-  stack_memory_ = stack;
 }
 
 /**
@@ -188,7 +185,7 @@ State& Stack_machine::get_state(std::string name) {
 
 /**
  * @brief Returns the first symbol of the input string
- * 
+ *
  * @return std::string that contains the first symbol of the string
  */
 std::string Stack_machine::get_input_symbol() {
@@ -200,10 +197,48 @@ std::string Stack_machine::get_input_symbol() {
 }
 
 /**
+ *
  * @brief Returns the top symbol of the stack
- * 
+ *
  * @return std::string that contains the top symbol of the stack
  */
-std::string Stack_machine::get_stack_top() {
-  return stack_memory_.top();
+std::string Stack_machine::get_stack_top() { return stack_memory_.top(); }
+
+/**
+ * @brief Returns a pair with the current input and stack state
+ *
+ * @return std::pair<std::string, std::string> pair with the input and stack
+ */
+std::pair<std::string, std::string> Stack_machine::get_current_input() {
+  return std::make_pair(get_input_symbol(), get_stack_top());
 }
+
+/**
+ * @brief Public method to start the machine
+ *
+ */
+void Stack_machine::start() {
+  transition(input_, consumed_input_, current_state_, stack_memory_);
+}
+
+/**
+ * @brief Recursive function that explores all the possible transitions until it
+ * runs out of possibilities or finds that the input is valid
+ *
+ */
+void Stack_machine::transition(std::string input, std::string consumed_input,
+                               State& state, std::stack<std::string> stack) {
+  std::cout << "Available transitions from " << state.get_name() << " with "
+            << input << " in the input and " << stack.top() << " in the stack"
+            << std::endl;
+  state.available_transitions("0", stack.top());
+}
+/*
+void Stack_machine::transition(std::string input, std::string consumed_input,
+                               State state, std::stack<std::string> stack) {
+  input_ = input;
+  consumed_input_ = consumed_input;
+  current_state_ = state;
+  stack_memory_ = stack;
+}
+*/

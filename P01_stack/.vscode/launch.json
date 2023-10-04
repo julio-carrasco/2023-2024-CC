@@ -9,7 +9,7 @@
         "type": "cppdbg",
         "request": "launch",
         "program": "${workspaceFolder}/output/main",
-        "args": ["/home/usuario/CC/P01_stack/examples/APv.txt"],
+        "args": ["/home/usuario/CC/P01_stack/examples/APv-2.txt"],
         "stopAtEntry": false,
         "cwd": "${fileDirname}",
         "environment": [],

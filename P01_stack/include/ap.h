@@ -31,8 +31,11 @@ class Stack_machine {
   void transition_manager(std::string);
   std::string get_input_symbol();
   std::string get_stack_top();
+  void transition(std::string, std::string, State&, std::stack<std::string>);
+  
 
  public:
   Stack_machine(std::string);
-  void transition(std::string, std::string, State, std::stack<std::string>);
+  void start();
+  std::pair<std::string, std::string> get_current_input();
 };

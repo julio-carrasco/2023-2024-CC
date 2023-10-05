@@ -24,11 +24,6 @@ Alphabet::Alphabet(std::string input) {
   }
   std::string empty_string = ".";
   alphabet_.insert(empty_string);
-  std::cout << "Alphabet elements: " << std::endl;
-  for (auto it: alphabet_) {
-    std::cout << it << " ";
-  }
-  std::cout << std::endl;
 }
 
 /**

@@ -11,6 +11,8 @@
  *
  */
 Stack_machine::Stack_machine(std::string filename) {
+  valid_input_ = false;
+  trailblaze_ = false;
   std::ifstream file(filename);
   std::string line;
   // will be used to store the name of the initial state, after all states have
@@ -46,7 +48,7 @@ Stack_machine::Stack_machine(std::string filename) {
             if (state_checker(line)) {
               initial_state = line;
             } else {
-              std::cerr << "Undefined initial state" << std::endl;
+              std::cerr << "Undefined initial state: " << line << std::endl;
               exit(1);
             }
             break;
@@ -55,7 +57,7 @@ Stack_machine::Stack_machine(std::string filename) {
             if (tau_.checker(line)) {
               stack_memory_.push(line);
             } else {
-              std::cerr << "Undefined initial stack symbol" << std::endl;
+              std::cerr << "Undefined initial stack symbol: " << line << std::endl;
               exit(1);
             }
             break;
@@ -162,7 +164,6 @@ void Stack_machine::transition_manager(std::string input) {
         break;
     }
   }
-  std::cout << "getting state " << elements[0] << std::endl;
   get_state(elements[0]).add_transition(input);
 }
 
@@ -213,12 +214,20 @@ std::pair<std::string, std::string> Stack_machine::get_current_input() {
   return std::make_pair(get_input_symbol(), get_stack_top());
 }
 
+void Stack_machine::set_input(std::string input) { input_ = input; }
+
 /**
  * @brief Public method to start the machine
  *
  */
 void Stack_machine::start() {
   transition(input_, consumed_input_, current_state_, stack_memory_);
+  write_path();
+  if (valid_input_) {
+    std::cout << "The string " << input_ << " is valid" << std::endl;
+  } else {
+    std::cout << "The string " << input_ << " is NOT valid" << std::endl;
+  }
 }
 
 /**
@@ -228,17 +237,95 @@ void Stack_machine::start() {
  */
 void Stack_machine::transition(std::string input, std::string consumed_input,
                                State& state, std::stack<std::string> stack) {
-  std::cout << "Available transitions from " << state.get_name() << " with "
-            << input << " in the input and " << stack.top() << " in the stack"
-            << std::endl;
-  state.available_transitions("0", stack.top());
+  // State before doing the transition
+
+  // Checks if stack and input are both empty
+  if (stack.top() == "." && stack.size() == 1 && input == ".") {
+    valid_input_ = true;
+    write_state(state.get_name(), input, consumed_input, stack);
+    return;
+  }
+
+  if (stack.top() == "." && stack.size() > 1) {
+    stack.pop();
+  }
+  std::vector<std::pair<std::string, std::vector<std::string>>>
+      possible_transitions;
+  possible_transitions = state.available_transitions(input, stack.top());
+  // Iterates all possible transitions
+  for (auto it : possible_transitions) {
+    std::stack<std::string> aux_stack = stack;
+    aux_stack.pop();
+    for (int i = 1; i < it.second.size(); i++) {
+      aux_stack.push(it.second[i]);
+    }
+    State aux_state = get_state(it.second[0]);
+    // Different cases for epsilon transitions and normal ones
+    if (it.first == ".") {
+      transition(input, consumed_input, aux_state, aux_stack);
+      if (valid_input_) {
+        write_state(state.get_name(), input, consumed_input, stack);
+        return;
+      }
+    } else {
+      std::string aux_input = input.substr(1);
+      std::string aux_consumed = consumed_input + input.substr(0, 1);
+      if (aux_input.empty()) {
+        aux_input = ".";
+      }
+      transition(aux_input, aux_consumed, aux_state, aux_stack);
+      if (valid_input_) {
+        write_state(state.get_name(), input, consumed_input, stack);
+        return;
+      }
+    }
+  }
+
+  return;
 }
-/*
-void Stack_machine::transition(std::string input, std::string consumed_input,
-                               State state, std::stack<std::string> stack) {
-  input_ = input;
-  consumed_input_ = consumed_input;
-  current_state_ = state;
-  stack_memory_ = stack;
+
+/**
+ * @brief Sets the flag to output in console the transitions that are being made
+ *
+ * @param mode 1 to activate the mode
+ */
+void Stack_machine::set_trail(std::string mode) {
+  if (mode == "1") {
+    trailblaze_ = true;
+  }
 }
-*/
+
+/**
+ * @brief Writes in console the state of the machine
+ *
+ */
+void Stack_machine::write_state(std::string name, std::string input,
+                                std::string consumed,
+                                std::stack<std::string> stack) {
+  std::string path = "";
+  if (trailblaze_ && valid_input_) {
+    path = name + " / " + input + " / " + consumed + " / ";
+    while (!stack.empty()) {
+      path += stack.top() + " ";
+      stack.pop();
+    }
+    path += "\n";
+    trail_path_.emplace_back(path);
+  }
+}
+
+/**
+ * @brief Writes in console the path the machine has taken to arrive to a valid
+ * conclusion
+ *
+ */
+void Stack_machine::write_path() {
+  if (trailblaze_ && valid_input_) {
+    std::cout << "Path taken: " << std::endl;
+    std::reverse(trail_path_.begin(), trail_path_.end());
+    for (auto it : trail_path_) {
+      std::cout << it;
+    }
+    std::cout << std::endl;
+  }
+}

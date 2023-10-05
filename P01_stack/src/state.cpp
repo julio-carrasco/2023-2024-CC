@@ -27,6 +27,7 @@ void State::add_transition(std::string input) {
   std::vector<std::string> elements;
   std::string input_string = "";
   std::string input_stack = "";
+  std::string next_state = "";
   std::vector<std::string> temp;
   int counter = 0;
   while (iss >> element) {
@@ -46,12 +47,18 @@ void State::add_transition(std::string input) {
       case 2:
         input_stack = elements[counter];
         break;
-      // next state and stack operation
+      // next state
+      case 3: 
+        next_state = elements[counter];
+        break;
       default:
         temp.emplace_back(elements[counter]);
         break;
     }
   }
+  // We reverse the vector to get the order of the stack symbols right
+  temp.emplace_back(next_state);
+  std::reverse(temp.begin(), temp.end());
   std::pair<std::string, std::string> aux =
       std::make_pair(input_string, input_stack);
   transitions_.emplace(aux, temp);
@@ -70,27 +77,18 @@ std::string State::get_name() { return name_; }
  *
  * @return std::vector<std::string>
  */
-std::vector<std::vector<std::string>> State::available_transitions(
+std::vector<std::pair<std::string, std::vector<std::string>>> State::available_transitions(
     std::string input, std::string stack_top) {
-  for (const auto& entry : transitions_) {
-    const auto& key = entry.first;
-    const auto& value = entry.second;
 
-    std::cout << "Key: (" << key.first << ", " << key.second << ")"
-              << std::endl;
-    std::cout << "Value: ";
-    for (const std::string& nextState : value) {
-      std::cout << nextState << " ";
-    }
-    std::cout << std::endl;
-  }
-
-  std::vector<std::vector<std::string>> possible_transitions;
+  std::vector<std::pair<std::string, std::vector<std::string>>> possible_transitions;
   std::pair<std::string, std::string> current_input =
-      std::make_pair(input, stack_top);
-  for (auto it = transitions_.equal_range(current_input); it.first != it.second;
-       ++it.first) {
-    possible_transitions.emplace_back(it.first->second);
+      std::make_pair(input.substr(0,1), stack_top);
+
+  
+  for (auto it = transitions_.begin(); it != transitions_.end(); it++) {
+    if(it->first == current_input) {
+      possible_transitions.emplace_back(std::make_pair(current_input.first, it->second));
+    }
   }
   // Case to add empty transitions
   if (current_input.first != ".") {
@@ -98,17 +96,18 @@ std::vector<std::vector<std::string>> State::available_transitions(
         std::make_pair(".", stack_top);
     for (auto it = transitions_.equal_range(empty_transition);
          it.first != it.second; ++it.first) {
-      possible_transitions.emplace_back(it.first->second);
+      possible_transitions.emplace_back(std::make_pair(empty_transition.first, it.first->second));
     }
   }
 
+  /*
   for (auto transitions : possible_transitions) {
-    std::cout << "Possible Transitions: ";
-    for (auto it : transitions) {
+    std::cout << "Possible Transitions consuming " << transitions.first << ": ";
+    for (auto it : transitions.second) {
       std::cout << it << " ";
     }
     std::cout << std::endl;
   }
-
+  */
   return possible_transitions;
 }

@@ -11,6 +11,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 class State {
  private:
@@ -25,6 +26,6 @@ class State {
   State();
   State(std::string);
   void add_transition(std::string);
-  std::vector<std::vector<std::string>> available_transitions(std::string, std::string);
+  std::vector<std::pair<std::string, std::vector<std::string>>> available_transitions(std::string, std::string);
   std::string get_name();
 };

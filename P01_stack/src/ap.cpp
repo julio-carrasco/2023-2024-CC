@@ -121,7 +121,8 @@ void Stack_machine::transition_manager(std::string input) {
   while (iss >> element) {
     elements.push_back(element);
   }
-  for (counter = 0; counter < elements.size(); counter++) {
+  int elem_size = elements.size();
+  for (counter = 0; counter < elem_size; counter++) {
     switch (counter) {
       // initial state of the transition
       case 0:
@@ -254,26 +255,31 @@ void Stack_machine::transition(std::string input, std::string consumed_input,
   possible_transitions = state.available_transitions(input, stack.top());
   // Iterates all possible transitions
   for (auto it : possible_transitions) {
+    // Copies the stack and applies the outcome of the transition
     std::stack<std::string> aux_stack = stack;
     aux_stack.pop();
-    for (int i = 1; i < it.second.size(); i++) {
+    int stack_elements_size = it.second.size();
+    for (int i = 1; i < stack_elements_size; i++) {
       aux_stack.push(it.second[i]);
     }
     State aux_state = get_state(it.second[0]);
     // Different cases for epsilon transitions and normal ones
     if (it.first == ".") {
       transition(input, consumed_input, aux_state, aux_stack);
+      // Writes the path in the way out
       if (valid_input_) {
         write_state(state.get_name(), input, consumed_input, stack);
         return;
       }
     } else {
+      // Applies the transition outcome to the input string
       std::string aux_input = input.substr(1);
       std::string aux_consumed = consumed_input + input.substr(0, 1);
       if (aux_input.empty()) {
         aux_input = ".";
       }
       transition(aux_input, aux_consumed, aux_state, aux_stack);
+      // Writes the path in the way out
       if (valid_input_) {
         write_state(state.get_name(), input, consumed_input, stack);
         return;
@@ -296,7 +302,7 @@ void Stack_machine::set_trail(std::string mode) {
 }
 
 /**
- * @brief Writes in console the state of the machine
+ * @brief Saves the current state of the machine to the trail path
  *
  */
 void Stack_machine::write_state(std::string name, std::string input,
@@ -321,7 +327,8 @@ void Stack_machine::write_state(std::string name, std::string input,
  */
 void Stack_machine::write_path() {
   if (trailblaze_ && valid_input_) {
-    std::cout << "Path taken: " << std::endl;
+    std::cout << std::endl;
+    std::cout << "Path taken: " << std::endl << std::endl;
     std::reverse(trail_path_.begin(), trail_path_.end());
     for (auto it : trail_path_) {
       std::cout << it;

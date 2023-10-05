@@ -33,7 +33,8 @@ void State::add_transition(std::string input) {
   while (iss >> element) {
     elements.push_back(element);
   }
-  for (counter = 0; counter < elements.size(); counter++) {
+  int elem_size = elements.size();
+  for (counter = 0; counter < elem_size; counter++) {
     switch (counter) {
       case 0:
         // We do nothing here as the starting state of the transition is of no
@@ -84,7 +85,6 @@ std::vector<std::pair<std::string, std::vector<std::string>>> State::available_t
   std::pair<std::string, std::string> current_input =
       std::make_pair(input.substr(0,1), stack_top);
 
-  
   for (auto it = transitions_.begin(); it != transitions_.end(); it++) {
     if(it->first == current_input) {
       possible_transitions.emplace_back(std::make_pair(current_input.first, it->second));
@@ -99,15 +99,5 @@ std::vector<std::pair<std::string, std::vector<std::string>>> State::available_t
       possible_transitions.emplace_back(std::make_pair(empty_transition.first, it.first->second));
     }
   }
-
-  /*
-  for (auto transitions : possible_transitions) {
-    std::cout << "Possible Transitions consuming " << transitions.first << ": ";
-    for (auto it : transitions.second) {
-      std::cout << it << " ";
-    }
-    std::cout << std::endl;
-  }
-  */
   return possible_transitions;
 }

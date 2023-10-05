@@ -46,6 +46,7 @@ void Help(int argc, char *argv[])
     std::cerr << "To execute the stack machine it must be given at least 2 arguments in all situations" << std::endl;
     std::cerr << "Aditionally you can pass another parameter to activate the trail mode which shows the state of the machine before each transition" << std::endl;
     std::cerr << "Ex: [executable] [config file] [input string] [1 to activate trail mode]" << std::endl;
+    std::cerr << "To know more use --help" << std::endl;
     exit(1);
   }
 }

@@ -12,7 +12,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <algorithm>
 
 class Tape {
   private:

@@ -82,9 +82,11 @@ State::available_transitions(std::string input) {
   }
   // Case to add empty transitions
   if (input != blank_) {
-    std::string empty = blank_;
     for (auto it = transitions_.begin(); it != transitions_.end(); it++) {
-      possible_transitions.emplace_back(std::make_pair(empty, it->second));
+      if(it->first == blank_) {
+        possible_transitions.emplace_back(std::make_pair(blank_, it->second));
+      }
+      
     }
   }
   return possible_transitions;

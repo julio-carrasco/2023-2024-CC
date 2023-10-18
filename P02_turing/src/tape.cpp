@@ -6,10 +6,11 @@
 
 #include "../include/tape.h"
 
-Tape::Tape() {}
+Tape::Tape() { head_ = 1; }
 
 Tape::Tape(std::string empty) {
   blank_ = empty;
+  head_ = 1;
 }
 
 Tape::Tape(std::string input, std::string empty) {
@@ -21,14 +22,14 @@ Tape::Tape(std::string input, std::string empty) {
 
 /**
  * @brief Returns head position
- * 
+ *
  * @return int head position
  */
 int Tape::get_head() { return head_; }
 
 /**
  * @brief Moves the head left, right or stop
- * 
+ *
  * @param movement string with the direction of the movement
  */
 void Tape::move_head(std::string movement) {
@@ -56,21 +57,24 @@ void Tape::move_head(std::string movement) {
 
 /**
  * @brief Writes the symbol to the tape in the position of the head
- * 
+ *
  * @param symbol string with the symbol to write
  */
 void Tape::write_tape(std::string symbol) { tape_[get_head()] = symbol; }
 
 /**
  * @brief Reads the tape in the position of the head
- * 
+ *
  * @return std::string with the character at the head
  */
-std::string Tape::read_tape() { return tape_[get_head()]; }
+std::string Tape::read_tape() {
+  std::string temp = tape_[0];
+  return tape_[get_head()];
+}
 
 /**
  * @brief Reads the whole tape
- * 
+ *
  * @return std::string with the whole tape
  */
 std::string Tape::read_whole_tape() {
@@ -82,12 +86,13 @@ std::string Tape::read_whole_tape() {
 }
 
 /**
- * @brief Function handles the cases when the head is at the edge of the physical vector and adds blank spaces
- * 
+ * @brief Function handles the cases when the head is at the edge of the
+ * physical vector and adds blank spaces
+ *
  */
 void Tape::edge_case() {
-  if(head_ == 0) {
-    tape_.emplace(tape_.begin(), blank_);
+  if (head_ == 0) {
+    tape_.insert(tape_.begin(), blank_);
   } else {
     tape_.emplace_back(blank_);
   }
@@ -95,13 +100,14 @@ void Tape::edge_case() {
 
 /**
  * @brief Writes the whole string to the tape
- * 
- * @param input 
+ *
+ * @param input
  */
 void Tape::set_input(std::string input) {
   tape_.emplace_back(blank_);
-  for(int i = 0; i < input.size(); i++) {
-    tape_.emplace_back(input[i]);
+  for (int i = 0; i < input.size(); i++) {
+    std::string temp = input.substr(i, 1);
+    tape_.emplace_back(temp);
   }
   tape_.emplace_back(blank_);
 }

@@ -58,9 +58,7 @@ Turing_machine::Turing_machine(std::string filename) {
           // blank symbol
           case 4:
             blank_symbol = line;
-            for (auto it : states_) {
-              it.add_blank(blank_symbol);
-            }
+            tape_ = Tape(blank_symbol);
             break;
           // final states
           case 5:
@@ -77,6 +75,7 @@ Turing_machine::Turing_machine(std::string filename) {
       }
     }
     for (auto it : states_) {
+      it.add_blank(blank_symbol);
       if (it.get_name() == initial_state) {
         current_state_ = it;
       }
@@ -130,23 +129,23 @@ void Turing_machine::transition_manager(std::string input) {
   }
   int elem_size = elements.size();
   if (!state_checker(elements[0])) {
-    std::cerr << "Undefined initial state" << elements[0] << std::endl;
+    std::cerr << "Undefined initial state: " << elements[0] << std::endl;
     exit(1);
   }
-  if (!sigma_.checker(elements[1])) {
-    std::cerr << "Undefined input symbol" << elements[1] << std::endl;
+  if (!sigma_.checker(elements[1]) && !tau_.checker(elements[1])) {
+    std::cerr << "Undefined input symbol: " << elements[1] << std::endl;
     exit(1);
   }
   if (!state_checker(elements[2])) {
-    std::cerr << "Undefined next state" << elements[2] << std::endl;
+    std::cerr << "Undefined next state: " << elements[2] << std::endl;
     exit(1);
   }
   if (!tau_.checker(elements[3])) {
-    std::cerr << "Undefined output symbol" << elements[3] << std::endl;
+    std::cerr << "Undefined output symbol: " << elements[3] << std::endl;
     exit(1);
   }
   if (movements_.find(elements[4]) == movements_.end()) {
-    std::cerr << "Undefined movement" << elements[4] << std::endl;
+    std::cerr << "Undefined movement: " << elements[4] << std::endl;
     exit(1);
   }
   get_state(elements[0]).add_transition(input);

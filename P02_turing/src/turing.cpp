@@ -12,12 +12,15 @@
  */
 Turing_machine::Turing_machine(std::string filename) {
   valid_input_ = false;
-  trailblaze_ = false;
   std::ifstream file(filename);
   std::string line;
   // will be used to store the name of the initial state, after all states have
   // their transitions configured it will be used
   std::string initial_state = "";
+  std::string blank_symbol = "";
+  movements_.insert("L");
+  movements_.insert("R");
+  movements_.insert("S");
   int counter = 0;
   if (file.is_open()) {
     while (getline(file, line)) {
@@ -39,7 +42,7 @@ Turing_machine::Turing_machine(std::string filename) {
           case 1:
             sigma_ = Alphabet(line);
             break;
-          // stack alphabet
+          // machine alphabet
           case 2:
             tau_ = Alphabet(line);
             break;
@@ -52,13 +55,17 @@ Turing_machine::Turing_machine(std::string filename) {
               exit(1);
             }
             break;
-          // initial stack symbols
+          // blank symbol
           case 4:
-            if (tau_.checker(line)) {
-              stack_memory_.push(line);
-            } else {
-              std::cerr << "Undefined initial stack symbol: " << line << std::endl;
-              exit(1);
+            blank_symbol = line;
+            for (auto it : states_) {
+              it.add_blank(blank_symbol);
+            }
+            break;
+          // final states
+          case 5:
+            for (const std::string& el : elements) {
+              end_states_.emplace_back(el);
             }
             break;
           // transitions
@@ -122,48 +129,25 @@ void Turing_machine::transition_manager(std::string input) {
     elements.push_back(element);
   }
   int elem_size = elements.size();
-  for (counter = 0; counter < elem_size; counter++) {
-    switch (counter) {
-      // initial state of the transition
-      case 0:
-        if (!state_checker(elements[counter])) {
-          std::cerr << "Undefined initial state" << elements[counter]
-                    << std::endl;
-          exit(1);
-        }
-        break;
-      // input
-      case 1:
-        if (!sigma_.checker(elements[counter])) {
-          std::cerr << "Undefined input symbol" << elements[counter]
-                    << std::endl;
-          exit(1);
-        }
-        break;
-      // stack input
-      case 2:
-        if (!tau_.checker(elements[counter])) {
-          std::cerr << "Undefined stack symbol" << elements[counter]
-                    << std::endl;
-          exit(1);
-        }
-        break;
-      // next state
-      case 3:
-        if (!state_checker(elements[counter])) {
-          std::cerr << "Undefined next state" << elements[counter] << std::endl;
-          exit(1);
-        }
-        break;
-      // stack operation
-      default:
-        if (!tau_.checker(elements[counter])) {
-          std::cerr << "Undefined stack symbol: " << elements[counter]
-                    << std::endl;
-          exit(1);
-        }
-        break;
-    }
+  if (!state_checker(elements[0])) {
+    std::cerr << "Undefined initial state" << elements[0] << std::endl;
+    exit(1);
+  }
+  if (!sigma_.checker(elements[1])) {
+    std::cerr << "Undefined input symbol" << elements[1] << std::endl;
+    exit(1);
+  }
+  if (!state_checker(elements[2])) {
+    std::cerr << "Undefined next state" << elements[2] << std::endl;
+    exit(1);
+  }
+  if (!tau_.checker(elements[3])) {
+    std::cerr << "Undefined output symbol" << elements[3] << std::endl;
+    exit(1);
+  }
+  if (movements_.find(elements[4]) == movements_.end()) {
+    std::cerr << "Undefined movement" << elements[4] << std::endl;
+    exit(1);
   }
   get_state(elements[0]).add_transition(input);
 }
@@ -186,48 +170,18 @@ State& Turing_machine::get_state(std::string name) {
 }
 
 /**
- * @brief Returns the first symbol of the input string
- *
- * @return std::string that contains the first symbol of the string
- */
-std::string Turing_machine::get_input_symbol() {
-  std::string aux = "";
-  if (!input_.empty()) {
-    aux = input_.substr(0, 1);
-  }
-  return aux;
-}
-
-/**
- *
- * @brief Returns the top symbol of the stack
- *
- * @return std::string that contains the top symbol of the stack
- */
-std::string Turing_machine::get_stack_top() { return stack_memory_.top(); }
-
-/**
- * @brief Returns a pair with the current input and stack state
- *
- * @return std::pair<std::string, std::string> pair with the input and stack
- */
-std::pair<std::string, std::string> Turing_machine::get_current_input() {
-  return std::make_pair(get_input_symbol(), get_stack_top());
-}
-
-void Turing_machine::set_input(std::string input) { input_ = input; }
-
-/**
  * @brief Public method to start the machine
  *
  */
 void Turing_machine::start() {
-  transition(input_, consumed_input_, current_state_, stack_memory_);
-  write_path();
+  transition(tape_, current_state_);
+  write_status();
   if (valid_input_) {
-    std::cout << "The string " << input_ << " is valid" << std::endl;
+    std::cout << "The string " << tape_.read_whole_tape() << " is valid"
+              << std::endl;
   } else {
-    std::cout << "The string " << input_ << " is NOT valid" << std::endl;
+    std::cout << "The string " << tape_.read_whole_tape() << " is NOT valid"
+              << std::endl;
   }
 }
 
@@ -236,103 +190,46 @@ void Turing_machine::start() {
  * runs out of possibilities or finds that the input is valid
  *
  */
-void Turing_machine::transition(std::string input, std::string consumed_input,
-                               State& state, std::stack<std::string> stack) {
-  // State before doing the transition
-
-  // Checks if stack and input are both empty
-  if (stack.top() == "." && stack.size() == 1 && input == ".") {
+void Turing_machine::transition(Tape tape, State& state) {
+  // Checks possible transitions
+  std::vector<std::pair<std::string, std::vector<std::string>>>
+      possible_transitions = state.available_transitions(tape.read_tape());
+  // Checks if current state is an end state
+  bool end_state = false;
+  for(auto it: end_states_) {
+    if(state.get_name() == it) {
+      end_state = true;
+    }
+  }
+  // If we are in an end state and there are no available transitions we finish
+  if (possible_transitions.size() == 0 && end_state) {
     valid_input_ = true;
-    write_state(state.get_name(), input, consumed_input, stack);
     return;
   }
 
-  if (stack.top() == "." && stack.size() > 1) {
-    stack.pop();
-  }
-  std::vector<std::pair<std::string, std::vector<std::string>>>
-      possible_transitions;
-  possible_transitions = state.available_transitions(input, stack.top());
   // Iterates all possible transitions
   for (auto it : possible_transitions) {
-    // Copies the stack and applies the outcome of the transition
-    std::stack<std::string> aux_stack = stack;
-    aux_stack.pop();
-    int stack_elements_size = it.second.size();
-    for (int i = 1; i < stack_elements_size; i++) {
-      aux_stack.push(it.second[i]);
-    }
+    // We get the next state, then we write to the tape and then we move the head, finally we call the function again
     State aux_state = get_state(it.second[0]);
-    // Different cases for epsilon transitions and normal ones
-    if (it.first == ".") {
-      transition(input, consumed_input, aux_state, aux_stack);
-      // Writes the path in the way out
-      if (valid_input_) {
-        write_state(state.get_name(), input, consumed_input, stack);
-        return;
-      }
-    } else {
-      // Applies the transition outcome to the input string
-      std::string aux_input = input.substr(1);
-      std::string aux_consumed = consumed_input + input.substr(0, 1);
-      if (aux_input.empty()) {
-        aux_input = ".";
-      }
-      transition(aux_input, aux_consumed, aux_state, aux_stack);
-      // Writes the path in the way out
-      if (valid_input_) {
-        write_state(state.get_name(), input, consumed_input, stack);
-        return;
-      }
-    }
+    tape.write_tape(it.second[1]);
+    tape.move_head(it.second[2]);
+    transition(tape, aux_state);
   }
 
   return;
 }
 
 /**
- * @brief Sets the flag to output in console the transitions that are being made
+ * @brief Writes in console the status of the machine
  *
- * @param mode 1 to activate the mode
+ *
  */
-void Turing_machine::set_trail(std::string mode) {
-  if (mode == "1") {
-    trailblaze_ = true;
-  }
-}
+void Turing_machine::write_status() { std::cout << std::endl; }
 
 /**
- * @brief Saves the current state of the machine to the trail path
- *
+ * @brief Sets the input string to the tape
+ * 
  */
-void Turing_machine::write_state(std::string name, std::string input,
-                                std::string consumed,
-                                std::stack<std::string> stack) {
-  std::string path = "";
-  if (trailblaze_ && valid_input_) {
-    path = name + " / " + input + " / " + consumed + " / ";
-    while (!stack.empty()) {
-      path += stack.top() + " ";
-      stack.pop();
-    }
-    path += "\n";
-    trail_path_.emplace_back(path);
-  }
-}
-
-/**
- * @brief Writes in console the path the machine has taken to arrive to a valid
- * conclusion
- *
- */
-void Turing_machine::write_path() {
-  if (trailblaze_ && valid_input_) {
-    std::cout << std::endl;
-    std::cout << "Path taken: " << std::endl << std::endl;
-    std::reverse(trail_path_.begin(), trail_path_.end());
-    for (auto it : trail_path_) {
-      std::cout << it;
-    }
-    std::cout << std::endl;
-  }
+void Turing_machine::set_input(std::string input) {
+  tape_.set_input(input);
 }

@@ -17,13 +17,18 @@
 class Tape {
   private:
   std::vector<std::string> tape_;
+  std::string blank_;
   int head_;
-  void edgeCase();
+  void edge_case();
 
   public:
+  Tape();
   Tape(std::string);
-  int getHead();
-  void moveHead(std::string);
-  void writeTape(std::string);
-  std::string readTape();
+  Tape(std::string, std::string);
+  int get_head();
+  void set_input(std::string);
+  void move_head(std::string);
+  void write_tape(std::string);
+  std::string read_tape();
+  std::string read_whole_tape();
 };

@@ -183,7 +183,6 @@ State& Turing_machine::get_state(std::string name) {
  */
 void Turing_machine::start() {
   transition(tape_, current_state_);
-  write_status();
   if (valid_input_) {
     std::cout << "The string " << tape_.read_whole_tape() << " is valid"
               << std::endl;
@@ -210,6 +209,7 @@ void Turing_machine::transition(Tape tape, State& state) {
     }
   }
   // If we are in an end state and there are no available transitions we finish
+  // also records end state of tape
   if (possible_transitions.size() == 0 && end_state) {
     valid_input_ = true;
     tape_.set_input(tape.read_whole_tape());
@@ -226,20 +226,14 @@ void Turing_machine::transition(Tape tape, State& state) {
     transition(tape, aux_state);
   }
 
-    if (possible_transitions.size() == 0 && !end_state && !valid_input_) {
+  // Records the tape when it fails
+  if (possible_transitions.size() == 0 && !end_state && !valid_input_) {
     tape_.set_input(tape.read_whole_tape());
     return;
   }
 
   return;
 }
-
-/**
- * @brief Writes in console the status of the machine
- *
- *
- */
-void Turing_machine::write_status() { std::cout << std::endl; }
 
 /**
  * @brief Sets the input string to the tape

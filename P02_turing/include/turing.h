@@ -35,7 +35,6 @@ class Turing_machine {
   State& get_state(std::string);
   void transition_manager(std::string);
   void transition(Tape, State&);
-  void write_status();
 
  public:
   Turing_machine(std::string);

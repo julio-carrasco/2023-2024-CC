@@ -89,6 +89,9 @@ Turing_machine::Turing_machine(std::string filename) {
         current_state_ = it;
       }
     }
+  } else {
+    std::cerr << "File does not exist: " << filename << std::endl;
+    exit(1);
   }
   file.close();
 }

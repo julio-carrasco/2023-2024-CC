@@ -19,6 +19,10 @@
 #include "state.h"
 #include "tape.h"
 
+/**
+ * @brief class for a turing machine
+ * 
+ */
 class Turing_machine {
  private:
   Tape tape_;

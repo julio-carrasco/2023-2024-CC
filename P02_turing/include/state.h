@@ -13,6 +13,10 @@
 #include <string>
 #include <vector>
 
+/**
+ * @brief class that describes a state of a finite state machine with transitions
+ * 
+ */
 class State {
  private:
   std::string name_;

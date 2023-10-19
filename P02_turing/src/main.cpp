@@ -20,11 +20,16 @@ int main(int argc, char *argv[]) {
   std::string filename = argv[1];
   Turing_machine mt(filename);
   mt.set_input(argv[2]);
-  
   mt.start();
   return 0;
 }
 
+/**
+ * @brief function handles the parameters given to the program in case the format is wrong
+ * 
+ * @param argc 
+ * @param argv 
+ */
 void Help(int argc, char *argv[])
 {
   const std::string help = "--help";

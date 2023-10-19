@@ -13,6 +13,10 @@
 #include <string>
 #include <vector>
 
+/**
+ * @brief class that describes the tape of a turing machine
+ * 
+ */
 class Tape {
   private:
   std::vector<std::string> tape_;

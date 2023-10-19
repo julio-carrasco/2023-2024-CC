@@ -9,7 +9,7 @@
         "type": "cppdbg",
         "request": "launch",
         "program": "${workspaceFolder}/output/main",
-        "args": ["/home/usuario/CC/P02_turing/examples/turing1.txt", "aabbb"],
+        "args": ["/home/usuario/CC/P02_turing/examples/turing2.txt", "b"],
         "stopAtEntry": false,
         "cwd": "${fileDirname}",
         "environment": [],

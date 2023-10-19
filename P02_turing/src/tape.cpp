@@ -104,6 +104,7 @@ void Tape::edge_case() {
  * @param input
  */
 void Tape::set_input(std::string input) {
+  tape_.clear();
   tape_.emplace_back(blank_);
   for (int i = 0; i < input.size(); i++) {
     std::string temp = input.substr(i, 1);

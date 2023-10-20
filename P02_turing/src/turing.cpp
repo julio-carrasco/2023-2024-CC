@@ -34,7 +34,7 @@ Turing_machine::Turing_machine(std::string filename) {
   int counter = 0;
   if (file.is_open()) {
     while (getline(file, line)) {
-      if (line[0] != '#') {
+      if (line[0] != '#' && line != "") {
         std::istringstream iss(line);
         std::string element;
         std::vector<std::string> elements;
@@ -261,7 +261,7 @@ void Turing_machine::set_input(std::string input) {
   std::string temp = "";
   for(int i = 0; i < input.size(); i++) {
     temp = input.substr(i, 1);
-    if(!tau_.checker(temp)) {
+    if(!sigma_.checker(temp)) {
       correct = false;
       break;
     }

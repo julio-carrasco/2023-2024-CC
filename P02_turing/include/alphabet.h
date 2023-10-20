@@ -1,8 +1,17 @@
-// Julio Ivan Carrasco Armas
-// 4º Ingenieria Informatica
-// Universidad de La Laguna
-// Complejidad de computacion
-// alu0101110639@ull.edu.es
+/**
+ * Universidad de La Laguna
+ * Escuela Superior de Ingeniería y Tecnología
+ * Grado en Ingeniería Informática
+ * Complejidad Computacional
+ * 
+ * 
+
+ * @author Julio Carrasco Armas
+ *  alu0101110639@ull.edu.es
+ * 
+ * @desc Turing
+ *       implementation of class for an alphabet, a set of unique characters
+ */
 
 #pragma once
 
@@ -10,10 +19,6 @@
 #include <set>
 #include <sstream>
 
-/**
- * @brief class for an alphabet, a set of unique characters
- *
- */
 class Alphabet {
  private:
   std::set<std::string> alphabet_;

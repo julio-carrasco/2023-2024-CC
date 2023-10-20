@@ -1,8 +1,17 @@
-// Julio Ivan Carrasco Armas
-// 4º Ingenieria Informatica
-// Universidad de La Laguna
-// Complejidad de computacion
-// alu0101110639@ull.edu.es
+/**
+ * Universidad de La Laguna
+ * Escuela Superior de Ingeniería y Tecnología
+ * Grado en Ingeniería Informática
+ * Complejidad Computacional
+ * 
+ * 
+
+ * @author Julio Carrasco Armas
+ *  alu0101110639@ull.edu.es
+ * 
+ * @desc Turing
+ *       implementation of class that describes a state of a finite state machine with transitions
+ */
 
 #pragma once
 
@@ -13,10 +22,6 @@
 #include <string>
 #include <vector>
 
-/**
- * @brief class that describes a state of a finite state machine with transitions
- * 
- */
 class State {
  private:
   std::string name_;

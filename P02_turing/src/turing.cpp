@@ -1,8 +1,17 @@
-// Julio Ivan Carrasco Armas
-// 4º Ingenieria Informatica
-// Universidad de La Laguna
-// Complejidad de computacion
-// alu0101110639@ull.edu.es
+/**
+ * Universidad de La Laguna
+ * Escuela Superior de Ingeniería y Tecnología
+ * Grado en Ingeniería Informática
+ * Complejidad Computacional
+ * 
+ * 
+ *
+ * @author Julio Carrasco Armas
+ *  alu0101110639@ull.edu.es
+ * 
+ * @desc Turing
+ *       implementation of class of a turing machine
+ */
 
 #include "../include/turing.h"
 
@@ -12,6 +21,7 @@
  */
 Turing_machine::Turing_machine(std::string filename) {
   valid_input_ = false;
+  written_tape_ = false;
   std::ifstream file(filename);
   std::string line;
   // will be used to store the name of the initial state, after all states have
@@ -66,7 +76,7 @@ Turing_machine::Turing_machine(std::string filename) {
               if (state_checker(el)) {
                 end_states_.emplace_back(el);
               } else {
-                std::cerr << "Undefined initial state: " << line << std::endl;
+                std::cerr << "Undefined final state: " << line << std::endl;
                 exit(1);
               }
             }
@@ -185,6 +195,7 @@ State& Turing_machine::get_state(std::string name) {
  *
  */
 void Turing_machine::start() {
+  Tape temp = tape_;
   transition(tape_, current_state_);
   if (valid_input_) {
     std::cout << "The string " << tape_.read_whole_tape() << " is valid"
@@ -193,6 +204,8 @@ void Turing_machine::start() {
     std::cout << "The string " << tape_.read_whole_tape() << " is NOT valid"
               << std::endl;
   }
+  reset_machine();
+  tape_ = temp;
 }
 
 /**
@@ -213,8 +226,9 @@ void Turing_machine::transition(Tape tape, State& state) {
   }
   // If we are in an end state and there are no available transitions we finish
   // also records end state of tape
-  if (possible_transitions.size() == 0 && end_state) {
+  if (possible_transitions.size() == 0 && end_state && !written_tape_) {
     valid_input_ = true;
+    written_tape_ = true;
     tape_.set_input(tape.read_whole_tape());
     return;
   }
@@ -242,4 +256,26 @@ void Turing_machine::transition(Tape tape, State& state) {
  * @brief Sets the input string to the tape
  *
  */
-void Turing_machine::set_input(std::string input) { tape_.set_input(input); }
+void Turing_machine::set_input(std::string input) { 
+  bool correct = true;
+  std::string temp = "";
+  for(int i = 0; i < input.size(); i++) {
+    temp = input.substr(i, 1);
+    if(!tau_.checker(temp)) {
+      correct = false;
+      break;
+    }
+  }
+  if(correct) {
+    tape_.set_input(input);
+  } else {
+    std::cerr << "Undefined input symbol: " << temp << std::endl;
+    exit(1);
+  }
+   
+  }
+
+void Turing_machine::reset_machine() {
+  valid_input_ = false;
+  written_tape_ = false;
+}

@@ -1,10 +1,17 @@
-// Julio Ivan Carrasco Armas
-// 4º Ingenieria Informatica
-// Universidad de La Laguna
-// Complejidad de computacion
-// alu0101110639@ull.edu.es
+/**
+ * Universidad de La Laguna
+ * Escuela Superior de Ingeniería y Tecnología
+ * Grado en Ingeniería Informática
+ * Complejidad Computacional
+ * 
+ * 
 
-// Class implements a turing machine tape
+ * @author Julio Carrasco Armas
+ *  alu0101110639@ull.edu.es
+ * 
+ * @desc Turing
+ *       implementation of class that describes the tape of a turing machine
+ */
 
 #pragma once
 
@@ -13,10 +20,6 @@
 #include <string>
 #include <vector>
 
-/**
- * @brief class that describes the tape of a turing machine
- * 
- */
 class Tape {
   private:
   std::vector<std::string> tape_;

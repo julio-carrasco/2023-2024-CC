@@ -1,10 +1,17 @@
-// Julio Ivan Carrasco Armas
-// 4º Ingenieria Informatica
-// Universidad de La Laguna
-// Complejidad de computacion
-// alu0101110639@ull.edu.es
+/**
+ * Universidad de La Laguna
+ * Escuela Superior de Ingeniería y Tecnología
+ * Grado en Ingeniería Informática
+ * Complejidad Computacional
+ * 
+ * 
 
-// Class implements a turing machine
+ * @author Julio Carrasco Armas
+ *  alu0101110639@ull.edu.es
+ * 
+ * @desc Turing
+ *       implementation of class that describes a turing machine
+ */
 
 #pragma once
 
@@ -19,14 +26,11 @@
 #include "state.h"
 #include "tape.h"
 
-/**
- * @brief class for a turing machine
- * 
- */
 class Turing_machine {
  private:
   Tape tape_;
   bool valid_input_;
+  bool written_tape_;
   Alphabet sigma_;
   Alphabet tau_;
   std::vector<State> states_;
@@ -45,4 +49,5 @@ class Turing_machine {
   void start();
   void set_input(std::string);
   std::pair<std::string, std::string> get_current_input();
+  void reset_machine();
 };

@@ -22,10 +22,10 @@ class Fpr {
  public:
   static int function_calls_;
   Fpr();
-  int zero();
+  int zero(int);
   int successor(int);
   int sum(int, int);
-  bool equals(int, int);
+  int equals(int, int);
   int multiply(int, int);
   int power(int, int);
   int projection(int, std::vector<int>);

@@ -27,8 +27,8 @@ Fpr::Fpr() { function_calls_ = 0; }
  */
 int Fpr::power(int x, int y) {
   function_calls_++;
-  if (equals(y, zero()) == 1) {
-    return projection(1, {successor(zero())});
+  if (y == 0) {
+    return projection(1, {successor(zero(x))});
   } else {
     return projection(3, {x, y, multiply(x, power(x, y - 1))});
   }
@@ -43,8 +43,8 @@ int Fpr::power(int x, int y) {
  */
 int Fpr::multiply(int x, int y) {
   function_calls_++;
-  if (equals(y, zero()) == 1) {
-    return projection(3, {x, y, zero()});
+  if (y == 0) {
+    return projection(3, {x, y, zero(x)});
   } else {
     return projection(3, {x, y, sum(x, multiply(x, y - 1))});
   }
@@ -59,29 +59,10 @@ int Fpr::multiply(int x, int y) {
  */
 int Fpr::sum(int x, int y) {
   function_calls_++;
-  if (equals(y, zero()) == 1) {
+  if (y == 0) {
     return projection(1, {x}); 
   } else {
     return projection(1, {sum(successor(x), y - 1)});
-  }
-}
-
-/**
- * @brief function that checks if two numbers are equal, implemented ina primitive recursive way
- * 
- * @param x 
- * @param y 
- * @return true 
- * @return false 
- */
-bool Fpr::equals(int x, int y) {
-  function_calls_++;
-  if (x == zero() && y == zero()) {
-    return projection(1, {1});
-  } else if (x == zero() || y == zero()) {
-    return projection(1, {zero()});
-  } else {
-    return projection(3, {x, y, equals(x - 1, y - 1)});
   }
 }
 
@@ -101,7 +82,7 @@ int Fpr::successor(int x) {
  * 
  * @return int 
  */
-int Fpr::zero() {
+int Fpr::zero(int x) {
   function_calls_++;
   return projection(1, {0});
 }
